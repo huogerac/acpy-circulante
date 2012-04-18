@@ -1,5 +1,7 @@
 *.pyc
 *.sqlite
+*~
 .project
 .pydevproject
 .settings
+settings_local.include
