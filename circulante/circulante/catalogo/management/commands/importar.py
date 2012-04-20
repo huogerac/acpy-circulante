@@ -16,7 +16,7 @@ class Command(BaseCommand):
         nome_arq = args[0]
         
         encoding = 'utf-8'
-        if len(arqs) == 2:
+        if len(args) == 2:
             encoding = args[1]
         
         with io.open(nome_arq, 'rt', encoding=encoding) as arq_ent:
