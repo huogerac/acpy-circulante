@@ -5,8 +5,8 @@ import io
 from django.core.management.base import BaseCommand, CommandError
 
 class Command(BaseCommand):
-    args = '<arq_delimitado_por_tabs>'
-    help = 'Importa massa de dados da livraria'
+    args = '<arq_delimitado_por_tabs> [<encoding>]'
+    help = 'Importa massa de dados da livraria (encoding default=utf-8)'
 
     def handle(self, *args, **options):
         
@@ -15,7 +15,11 @@ class Command(BaseCommand):
         
         nome_arq = args[0]
         
-        with io.open(nome_arq, 'rt', encoding='cp1252') as arq_ent:
+        encoding = 'utf-8'
+        if len(arqs) == 2:
+            encoding = args[1]
+        
+        with io.open(nome_arq, 'rt', encoding=encoding) as arq_ent:
             linhas = arq_ent.readlines()
             
         self.stdout.write('Importando %s linhas\n' % len(linhas))
