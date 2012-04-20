@@ -15,7 +15,7 @@ class Command(BaseCommand):
         
         nome_arq = args[0]
         
-        with io.open(nome_arq, 'r') as arq_ent:
+        with io.open(nome_arq, 'rt', encoding='cp1252') as arq_ent:
             linhas = arq_ent.readlines()
             
         self.stdout.write('Importando %s linhas\n' % len(linhas))
