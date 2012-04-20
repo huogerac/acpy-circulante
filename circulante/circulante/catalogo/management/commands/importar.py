@@ -4,7 +4,7 @@ import io
 
 from django.core.management.base import BaseCommand, CommandError
 
-from circulante.catalogo.models import Publicacao
+from circulante.catalogo.models import Publicacao, Credito
 
 class Command(BaseCommand):
     args = '<arq_delimitado_por_tabs> [<encoding>]'
@@ -22,7 +22,8 @@ class Command(BaseCommand):
             encoding = args[1]
         
         with io.open(nome_arq, 'rt', encoding=encoding) as arq_ent:
-            qt_registros = 0
+            qt_publicacoes = 0
+            qt_creditos = 0
             try:
                 #linhas = arq_ent.readlines()
                 for linha in arq_ent:
@@ -42,7 +43,20 @@ class Command(BaseCommand):
                     if id_padrao is None:
                         raise CommandError( repr(partes) )
                     
-                    qt_registros += 1 
+                    num_paginas = int(num_paginas)
+                    nova_publicacao = Publicacao(id_padrao = id_padrao,
+                                                 num_paginas = num_paginas,
+                                                 titulo = titulo)
+                    nova_publicacao.save()
+                    for autor in autores.split('/'):
+                        autor = autor.strip()
+                        if not autor:
+                            continue
+                        cred = Credito(nome=autor, publicacao=nova_publicacao)
+                        cred.save()
+                        qt_creditos += 1
+                        
+                    qt_publicacoes += 1 
                 
             except UnicodeDecodeError as exc:
                 # para ativar uma linha de breakpoint para debug
@@ -50,4 +64,4 @@ class Command(BaseCommand):
                 msg = u'Encondig incorreto: "{0.reason}" posicao:{0.start}'
                 raise CommandError(msg.format(exc))
             
-        self.stdout.write('Importando %s linhas\n' % qt_registros)
+        self.stdout.write('Importado %s publicacoes\n Importado %s creditos\n ' % (qt_publicacoes, qt_creditos) )
