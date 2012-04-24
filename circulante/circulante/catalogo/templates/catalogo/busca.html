@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<title>Search</title>
+	</head>
+	<body>
+		<h1>Busca de publicações</h1>
+		{% if erros %}
+			<ul>
+				{% for erro in erros %}
+				<li>
+					{{ erro }}
+				</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+		<form action="" method="get">
+			<input type="text" name="q">
+			<input type="submit" value="Buscar">
+		</form>
+	</body>
+</html>
