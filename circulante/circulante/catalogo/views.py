@@ -4,6 +4,8 @@ from django.shortcuts import render
 
 from .models import Publicacao 
 
+from isbn import isValidISBN10
+
 def busca(request):
     erros = []
     pubs = []
@@ -17,9 +19,12 @@ def busca(request):
             erros.append(u'Entre no mínimo com 20 caracteres.')
             
         else:
-            pubs = Publicacao.objects.filter(titulo__icontains=q)
+            if isValidISBN10(q):
+                pubs = Publicacao.objects.filter(id_padrao=q)
+            else:
+                pubs = Publicacao.objects.filter(titulo__icontains=q)
             
     return render(request, 'catalogo/busca.html', 
-                  {"erros": erros, "publicacoes": pubs, "busca": q})
+                  {"erros": erros, "publicacoes": pubs, "q": q})
 
     
