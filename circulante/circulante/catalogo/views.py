@@ -6,6 +6,8 @@ from .models import Publicacao
 
 def busca(request):
     erros = []
+    pubs = []
+    q = ''
     if 'q' in request.GET:
         q = request.GET['q']
         if not q:
@@ -16,12 +18,8 @@ def busca(request):
             
         else:
             pubs = Publicacao.objects.filter(titulo__icontains=q)
-            return render(request, 'catalogo/busca.html', {"publicacoes": pubs})
             
-            #return render('busca.html',
-            #    {'publicacoes': pubs, 'busca': q})
-            
-    return render(request, 'catalogo/busca.html', {"erros": erros})
+    return render(request, 'catalogo/busca.html', 
+                  {"erros": erros, "publicacoes": pubs, "busca": q})
+
     
-    #return render_to_response('busca.html',
-    #    {'erros': erros})

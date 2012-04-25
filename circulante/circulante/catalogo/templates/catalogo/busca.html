@@ -17,5 +17,24 @@
 			<input type="text" name="q">
 			<input type="submit" value="Buscar">
 		</form>
+		
+		<hr>
+		
+		{% if publicacoes %}
+		
+		<h2>
+		{{publicacoes|length}} publicaç{{publicacoes|pluralize:"ão,ões"}}
+		</h2>
+		
+		<table>
+			{% for pub in publicacoes %}
+				<tr>
+					<td>{{pub.id_padrao}}</td>
+					<td>{{pub.titulo}}</td>
+				</tr>
+			{% endfor %}
+		</table>		
+		{% endif %}
+		
 	</body>
 </html>
