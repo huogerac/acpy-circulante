@@ -1,0 +1,35 @@
+<html>
+	<head>
+		<title>Catalogar</title>
+	</head>
+	<body>
+		<h1>Catalogar Publicação</h1>
+		{% if erros %}
+			<ul>
+				{% for erro in erros %}
+				<li>
+					{{ erro }}
+				</li>
+				{% endfor %}
+			</ul>
+		{% endif %}
+		
+		<form action="" method="post">
+			
+			{% csrf_token %}
+			
+			<table border="1">
+			
+				{{ formulario.as_table}}
+			
+				<tr>
+					<td><input type="submit" value="Enviar" /></td>
+				</tr>
+				
+			</table>
+			
+			
+		</form>
+		
+	</body>
+</html>

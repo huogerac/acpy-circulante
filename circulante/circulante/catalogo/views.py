@@ -1,8 +1,12 @@
 # coding: utf-8
 
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
 
 from .models import Publicacao 
+
+from .forms import PublicacaoModelForm
 
 from isbn import validatedISBN10
 
@@ -29,3 +33,15 @@ def busca(request):
                   {"erros": erros, "publicacoes": pubs, "q": q})
 
     
+def catalogar(request):
+    if request.method == 'POST':
+        #bound form
+        formulario = PublicacaoModelForm(request.POST)
+        if formulario.is_valid():
+            formulario.save()
+            return HttpResponseRedirect(reverse('busca'))
+    else:
+        formulario = PublicacaoModelForm()
+        
+    return render(request, 'catalogo/catalogar.html',
+                  {'formulario': formulario})    
