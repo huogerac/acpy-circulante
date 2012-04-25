@@ -39,7 +39,9 @@ def catalogar(request):
         formulario = PublicacaoModelForm(request.POST)
         if formulario.is_valid():
             formulario.save()
-            return HttpResponseRedirect(reverse('busca'))
+            #dicionário com todas as informações do form
+            titulo = formulario.cleaned_data['titulo']
+            return HttpResponseRedirect(reverse('busca') + '?q=' + titulo )
     else:
         formulario = PublicacaoModelForm()
         
