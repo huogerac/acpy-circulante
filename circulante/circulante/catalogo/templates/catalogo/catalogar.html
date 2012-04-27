@@ -21,6 +21,15 @@
 			<table border="1">
 			
 				{{ formulario.as_table}}
+				
+				<tr>
+					<td></td>
+					<td>
+						<table border="1">
+							{{ formset.as_table }}
+						</table>
+					</td>
+				</tr>
 			
 				<tr>
 					<td><input type="submit" value="Enviar" /></td>

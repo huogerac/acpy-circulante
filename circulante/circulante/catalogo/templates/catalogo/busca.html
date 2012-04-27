@@ -4,6 +4,10 @@
 	</head>
 	<body>
 		<h1>Busca de publicações</h1>
+		
+		<a href="{% url catalogar %}">Inserir nova publicação</a>
+		
+		
 		{% if erros %}
 			<ul>
 				{% for erro in erros %}
@@ -31,11 +35,13 @@
 			{% for pub in publicacoes %}
 				<tr>
 					<td>{{pub.id_padrao}}</td>
-					<td>{{pub.titulo}}</td>
+					<td><a href="{% url editar pub.id %}">{{pub.titulo}}</a></td>
 				</tr>
 			{% endfor %}
 		</table>		
 		{% endif %}
+		
+		
 		
 	</body>
 </html>

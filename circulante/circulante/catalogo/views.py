@@ -2,9 +2,10 @@
 
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
+from django.forms.models import inlineformset_factory
 
-from .models import Publicacao 
+from .models import Publicacao, Credito
 
 from .forms import PublicacaoModelForm
 
@@ -33,7 +34,7 @@ def busca(request):
                   {"erros": erros, "publicacoes": pubs, "q": q})
 
     
-def catalogar(request):
+def catalogar_form_sem_creditos(request):
     if request.method == 'POST':
         #bound form
         formulario = PublicacaoModelForm(request.POST)
@@ -46,4 +47,55 @@ def catalogar(request):
         formulario = PublicacaoModelForm()
         
     return render(request, 'catalogo/catalogar.html',
-                  {'formulario': formulario})    
+                  {'formulario': formulario})
+    
+    
+    
+def catalogar(request):
+    CreditoInlineFormSet = inlineformset_factory(Publicacao, Credito)
+    if request.method == "POST":
+        formulario = PublicacaoModelForm(request.POST)
+        if formulario.is_valid():
+            publicacao = formulario.save()
+            formset = CreditoInlineFormSet(request.POST, instance=publicacao)
+            formset.save()
+            titulo = formulario.cleaned_data['titulo']
+            return HttpResponseRedirect(reverse('busca')+'?q='+titulo)
+            # Do something.
+    else:
+        formulario = PublicacaoModelForm()
+        formset = CreditoInlineFormSet()
+    return render(request, 'catalogo/catalogar.html', 
+        {'formulario': formulario, 
+         'formset': formset})    
+    
+    
+    
+        
+def editar(request, pk):
+    pub = get_object_or_404(Publicacao, pk=pk)
+    CreditoInlineFormSet = inlineformset_factory(Publicacao, Credito)
+     
+    if request.method == 'POST':
+         formulario = PublicacaoModelForm(request.POST)
+         if formulario.is_valid():
+             publicacao = formulario.save()
+             formset = CreditoInlineFormSet(request.POST, instance=publicacao)
+             formset.save()
+             titulo = formulario.cleaned_data['titulo']
+             return HttpResponseRedirect(reverse('busca')+'?q='+titulo)
+    else:
+         formulario = PublicacaoModelForm(instance=pub)
+         formset = CreditoInlineFormSet(instance=pub)
+
+    return render(request, 'catalogo/catalogar.html', 
+        {'formulario': formulario, 
+         'formset': formset})    
+         
+         
+         
+         
+     
+     
+    
+    
