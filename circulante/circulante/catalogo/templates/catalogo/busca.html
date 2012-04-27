@@ -35,7 +35,7 @@
 			{% for pub in publicacoes %}
 				<tr>
 					<td>{{pub.id_padrao}}</td>
-					<td><a href="{% url editar pub.id %}">{{pub.titulo}}</a></td>
+					<td><a href="{% url editar pub.pk %}">{{pub.titulo}}</a></td>
 				</tr>
 			{% endfor %}
 		</table>		

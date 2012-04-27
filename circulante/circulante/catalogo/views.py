@@ -77,10 +77,10 @@ def editar(request, pk):
     CreditoInlineFormSet = inlineformset_factory(Publicacao, Credito)
      
     if request.method == 'POST':
-         formulario = PublicacaoModelForm(request.POST)
+         formulario = PublicacaoModelForm(request.POST, instance=pub)
          if formulario.is_valid():
-             publicacao = formulario.save()
-             formset = CreditoInlineFormSet(request.POST, instance=publicacao)
+             formulario.save()
+             formset = CreditoInlineFormSet(request.POST, instance=pub)
              formset.save()
              titulo = formulario.cleaned_data['titulo']
              return HttpResponseRedirect(reverse('busca')+'?q='+titulo)
