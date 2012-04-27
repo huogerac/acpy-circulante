@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
 from django.forms.models import inlineformset_factory
+from django.utils.http import urlquote
 
 from .models import Publicacao, Credito
 
@@ -20,8 +21,8 @@ def busca(request):
         if not q:
             erros.append(u'Digite um termo para a busca.')
             
-        elif len(q) > 20:
-            erros.append(u'Entre no mínimo com 20 caracteres.')
+        #elif len(q) > 80:
+        #    erros.append(u'Entre no mínimo com 80 caracteres.')
             
         else:
             isbn = validatedISBN10(q)
@@ -60,7 +61,7 @@ def catalogar(request):
             formset = CreditoInlineFormSet(request.POST, instance=publicacao)
             formset.save()
             titulo = formulario.cleaned_data['titulo']
-            return HttpResponseRedirect(reverse('busca')+'?q='+titulo)
+            return HttpResponseRedirect(reverse('busca')+'?q='+ urlquote(titulo) )
             # Do something.
     else:
         formulario = PublicacaoModelForm()
@@ -78,15 +79,16 @@ def editar(request, pk):
      
     if request.method == 'POST':
          formulario = PublicacaoModelForm(request.POST, instance=pub)
-         if formulario.is_valid():
+         formset = CreditoInlineFormSet(request.POST, instance=pub)
+         if formulario.is_valid() and formset.is_valid():
              formulario.save()
-             formset = CreditoInlineFormSet(request.POST, instance=pub)
              formset.save()
              titulo = formulario.cleaned_data['titulo']
-             return HttpResponseRedirect(reverse('busca')+'?q='+titulo)
+             return HttpResponseRedirect(reverse('busca')+'?q=' + urlquote(titulo) )
     else:
          formulario = PublicacaoModelForm(instance=pub)
          formset = CreditoInlineFormSet(instance=pub)
+         
 
     return render(request, 'catalogo/catalogar.html', 
         {'formulario': formulario, 
