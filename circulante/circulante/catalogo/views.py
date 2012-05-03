@@ -6,11 +6,14 @@ from django.shortcuts import render, get_object_or_404
 from django.forms.models import inlineformset_factory
 from django.utils.http import urlquote
 
-from .models import Publicacao, Credito
+from django.views.decorators.http import require_http_methods
 
+
+from .models import Publicacao, Credito
 from .forms import PublicacaoModelForm
 
 from isbn import validatedISBN10
+from httpdecorator import http_method
 
 def busca(request):
     erros = []
@@ -35,6 +38,8 @@ def busca(request):
                   {"erros": erros, "publicacoes": pubs, "q": q})
 
     
+    
+    
 def catalogar_form_sem_creditos(request):
     if request.method == 'POST':
         #bound form
@@ -50,54 +55,77 @@ def catalogar_form_sem_creditos(request):
     return render(request, 'catalogo/catalogar.html',
                   {'formulario': formulario})
     
+
+
+
     
+def pagina_catalogar(request, form_pub, form_cred):
+    return render(request, 'catalogo/catalogar.html', 
+        {'formulario': form_pub, 'formset': form_cred})
     
+def pagina_busca(titulo):        
+    return HttpResponseRedirect(reverse('busca')+'?q='+ urlquote(titulo) )
+
+
+  
+
+    
+@http_method('get')
 def catalogar(request):
     CreditoInlineFormSet = inlineformset_factory(Publicacao, Credito)
-    if request.method == "POST":
-        formulario = PublicacaoModelForm(request.POST)
-        if formulario.is_valid():
-            publicacao = formulario.save()
-            formset = CreditoInlineFormSet(request.POST, instance=publicacao)
-            formset.save()
-            titulo = formulario.cleaned_data['titulo']
-            return HttpResponseRedirect(reverse('busca')+'?q='+ urlquote(titulo) )
-            # Do something.
-    else:
-        formulario = PublicacaoModelForm()
-        formset = CreditoInlineFormSet()
-    return render(request, 'catalogo/catalogar.html', 
-        {'formulario': formulario, 
-         'formset': formset})    
+    form_pub = PublicacaoModelForm()
+    form_cred = CreditoInlineFormSet()
+    return pagina_catalogar(request, form_pub, form_cred)
+
+
+@http_method('post')
+def catalogar(request):
+    CreditoInlineFormSet = inlineformset_factory(Publicacao, Credito)
+    form_pub = PublicacaoModelForm(request.POST)
+    form_cred = CreditoInlineFormSet()
+    if not create_publicacao(request, form_pub):
+        return pagina_catalogar(request, form_pub, form_cred)
+    return pagina_busca(form_pub.cleaned_data['titulo'])
+
+
+@http_method('post')
+def editar(request, pk):
+    pub = get_object_or_404(Publicacao, pk=pk)
     
-    
-    
-        
+    CreditoInlineFormSet = inlineformset_factory(Publicacao, Credito)
+    form_pub = PublicacaoModelForm(request.POST, instance=pub)
+    form_cred = CreditoInlineFormSet(request.POST, instance=pub)
+    if not update_publicacao(pub, form_pub, form_cred):
+        return pagina_catalogar(request, form_pub, form_cred)
+    return pagina_busca(form_pub.cleaned_data['titulo'])
+
+
+@http_method('get')
 def editar(request, pk):
     pub = get_object_or_404(Publicacao, pk=pk)
     CreditoInlineFormSet = inlineformset_factory(Publicacao, Credito)
-     
-    if request.method == 'POST':
-         formulario = PublicacaoModelForm(request.POST, instance=pub)
-         formset = CreditoInlineFormSet(request.POST, instance=pub)
-         if formulario.is_valid() and formset.is_valid():
-             formulario.save()
-             formset.save()
-             titulo = formulario.cleaned_data['titulo']
-             return HttpResponseRedirect(reverse('busca')+'?q=' + urlquote(titulo) )
-    else:
-         formulario = PublicacaoModelForm(instance=pub)
-         formset = CreditoInlineFormSet(instance=pub)
-         
+    form_pub = PublicacaoModelForm(instance=pub)
+    form_cred = CreditoInlineFormSet(instance=pub)
+    return pagina_catalogar(request, form_pub, form_cred)
 
-    return render(request, 'catalogo/catalogar.html', 
-        {'formulario': formulario, 
-         'formset': formset})    
-         
-         
-         
-         
-     
-     
     
+def create_publicacao(request, form_pub):
+    CreditoInlineFormSet = inlineformset_factory(Publicacao, Credito)
     
+    if not form_pub.is_valid():
+        return False
+    
+    pub = form_pub.save()
+    form_cred = CreditoInlineFormSet(request.POST, instance=pub)
+    form_cred.save()
+    
+    return True
+
+def update_publicacao(pub, form_pub, form_cred):
+    if not form_pub.is_valid() or not form_cred.is_valid():
+        return False
+     
+    form_pub.save()
+    form_cred.save()
+
+    return True    
