@@ -1,3 +1,4 @@
+#coding:utf-8
 # Django settings for circulante project.
 
 import os
@@ -6,6 +7,9 @@ PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+
+#configuracoes especificas do circulante
+AUTH_PROFILE_MODULE = 'emprestimo.Participante'
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -127,6 +131,7 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
     'circulante.catalogo',
+    'circulante.emprestimo',
 )
 
 # A sample logging configuration. The only tangible logging
