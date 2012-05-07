@@ -1,8 +1,9 @@
-<html>
-	<head>
-		<title>Search</title>
-	</head>
-	<body>
+{% extends 'base.html' %}
+
+{% block chamada %}Busca{% endblock %}
+
+{% block corpo %}
+
 		<h1>Busca de publicações</h1>
 		
 		<a href="{% url catalogar %}">Inserir nova publicação</a>
@@ -41,7 +42,4 @@
 		</table>		
 		{% endif %}
 		
-		
-		
-	</body>
-</html>
+{% endblock corpo %}
