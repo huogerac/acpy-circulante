@@ -8,5 +8,5 @@ urlpatterns = patterns('',
     #?P<pk>
     url(r'editar/(\d+)', editar, name='editar'),
 
-    url(r'', busca, name='busca'),
+    url(r'^$', busca, name='busca'),
 )

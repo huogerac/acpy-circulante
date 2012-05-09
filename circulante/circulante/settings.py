@@ -135,6 +135,8 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     'circulante.catalogo',
     'circulante.emprestimo',
+    #third-party
+    'registration', 
 )
 
 # A sample logging configuration. The only tangible logging
@@ -165,6 +167,9 @@ LOGGING = {
         },
     }
 }
+
+#Configurações específicas do circulante:
+ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window;
 
 execfile(os.path.join(PROJECT_PATH,'settings_local.include'))
 
